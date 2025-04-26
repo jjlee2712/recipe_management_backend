@@ -5,8 +5,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -35,16 +39,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       // Extract username from token
       username = jwtUtil.extractUsername(token);
     }
-
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
       UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
       // Validate token to ensure token is not expired and username is same between token and
       // database
       if (jwtUtil.validateToken(username, userDetails, token)) {
+        // Get Roles from token
+        List<String> roles = jwtUtil.extractRoles(token);
+
+        List<GrantedAuthority> authorities =
+            roles.stream()
+                .filter(role -> role != null && !role.trim().isEmpty())
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toList());
+
+        System.out.println(authorities);
+
+        // Set the userDetails and the authorities of the user
         UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
+            new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
         // Set all the request details into authentication
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -29,6 +29,12 @@ public class SecurityConfiguration {
                 authorize
                     .requestMatchers("/authenticate")
                     .permitAll()
+                    // Only allow admin
+                    .requestMatchers("/admin")
+                    .hasRole("ADMIN")
+                    // Only allow user
+                    .requestMatchers("/user")
+                    .hasRole("USER")
                     .anyRequest()
                     .authenticated());
 
@@ -49,6 +55,7 @@ public class SecurityConfiguration {
     return new BCryptPasswordEncoder();
   }
 
+  // Set the DaoAuthenticationProvider to use UserDetailsServices instead of the default one
   @Bean
   public AuthenticationManager authenticationManager(
       UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
