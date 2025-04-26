@@ -23,8 +23,13 @@ public class TestController {
     return "test";
   }
 
-  @GetMapping("/authentication")
-  public String test2() {
-    return "authentication";
+  @GetMapping("/admin")
+  public String admin() {
+    return "admin";
+  }
+
+  @GetMapping("/user")
+  public String user() {
+    return "user";
   }
 }
