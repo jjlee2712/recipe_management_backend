@@ -1,4 +1,4 @@
-package com.backend.recipe_management;
+package com.backend.recipeManagement;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

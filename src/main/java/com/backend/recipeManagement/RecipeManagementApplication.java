@@ -1,4 +1,4 @@
-package com.backend.recipe_management;
+package com.backend.recipeManagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
