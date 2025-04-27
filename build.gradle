@@ -9,7 +9,7 @@ group = 'com.backend'
 version = '0.0.1-SNAPSHOT'
 
 flyway {
-  url = 'jdbc:postgresql://ep-odd-fog-a1qoppep-pooler.ap-southeast-1.aws.neon.tech/neondb?user=neondb_owner&password=npg_z1hjp4QoCmfq&sslmode=require'
+  url = uri("${flyway.url}")
 }
 
 java {
