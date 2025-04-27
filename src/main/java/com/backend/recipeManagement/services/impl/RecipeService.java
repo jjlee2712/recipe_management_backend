@@ -1,11 +1,16 @@
 package com.backend.recipeManagement.services.impl;
 
 import com.backend.recipeManagement.constant.CommonConstant;
+import com.backend.recipeManagement.dto.PaginationRequestDTO;
+import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
 import com.backend.recipeManagement.dto.recipe.AddRecipeDTO;
 import com.backend.recipeManagement.dto.recipe.AddRecipeIngredientsDTO;
+import com.backend.recipeManagement.dto.recipe.RecipeListDTO;
+import com.backend.recipeManagement.dto.recipe.RecipeListRequestDTO;
 import com.backend.recipeManagement.exception.ExceptionCode;
 import com.backend.recipeManagement.exception.RecipeManagementException;
+import com.backend.recipeManagement.mapper.recipe.RecipeMapper;
 import com.backend.recipeManagement.model.Category;
 import com.backend.recipeManagement.model.Ingredients;
 import com.backend.recipeManagement.model.Recipes;
@@ -17,6 +22,7 @@ import com.backend.recipeManagement.repository.jpa.RecipeRepository;
 import com.backend.recipeManagement.repository.jpa.RecipesCategoryRepository;
 import com.backend.recipeManagement.services.IRecipeService;
 import com.backend.recipeManagement.util.LogUtil;
+import com.backend.recipeManagement.util.PaginationUtil;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,6 +40,23 @@ public class RecipeService implements IRecipeService {
   private final RecipesCategoryRepository recipesCategoryRepository;
   private final CategoryRepository categoryRepository;
   private final IngredientsRepository ingredientsRepository;
+
+  @Override
+  public List<RecipeListDTO> getRecipeList(
+      RecipeListRequestDTO requestDTO, PaginationRequestDTO paginationRequestDTO, UserDTO user) {
+    log.info(LogUtil.ENTRY_SERVICES, "getRecipeList");
+    PaginationRequestDTO pg =
+        PaginationUtil.pageSorting(paginationRequestDTO, new RecipeMapper(), "asc");
+    return recipeRepositoryJooq.getRecipeList(requestDTO, pg);
+  }
+
+  @Override
+  public PaginationResponseDTO getRecipeListPages(
+      RecipeListRequestDTO requestDTO, PaginationRequestDTO paginationRequestDTO, UserDTO user) {
+    log.info(LogUtil.ENTRY_SERVICES, "getRecipeListPages");
+    Long total = recipeRepositoryJooq.getRecipeListPages(requestDTO);
+    return PaginationUtil.pagination(paginationRequestDTO.size(), total);
+  }
 
   @Override
   @Transactional
