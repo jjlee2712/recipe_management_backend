@@ -27,7 +27,7 @@ public class SecurityConfiguration {
         .authorizeHttpRequests(
             authorize ->
                 authorize
-                    .requestMatchers("/authenticate")
+                    .requestMatchers("/auth/**")
                     .permitAll()
                     // Only allow admin
                     .requestMatchers("/admin")
