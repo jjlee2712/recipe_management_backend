@@ -8,6 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,7 +28,7 @@ public class Ingredients {
 
   private String ingredientName;
 
-  private String quantity;
+  private BigDecimal quantity;
 
   private String unit;
 
@@ -37,10 +40,23 @@ public class Ingredients {
 
   private Long updatedBy;
 
+  private Character activeFlag;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "recipe_id", insertable = true, updatable = true)
   private Recipes recipes;
 
   @Column(name = "recipe_id", insertable = false, updatable = false)
   private Long recipeId;
+
+  @PrePersist
+  protected void onCreate() {
+    createdDate = LocalDateTime.now();
+    updatedDate = createdDate;
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedDate = LocalDateTime.now();
+  }
 }

@@ -8,6 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,4 +31,23 @@ public class Ratings {
 
   @Column(name = "recipe_id", insertable = false, updatable = false)
   private Long recipeId;
+
+  private LocalDateTime createdDate;
+
+  private LocalDateTime updatedDate;
+
+  private Long createdBy;
+
+  private Long updatedBy;
+
+  @PrePersist
+  protected void onCreate() {
+    createdDate = LocalDateTime.now();
+    updatedDate = createdDate;
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedDate = LocalDateTime.now();
+  }
 }

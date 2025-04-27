@@ -8,6 +8,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,4 +46,17 @@ public class RecipesCategory {
   private Long createdBy;
 
   private Long updatedBy;
+
+  private Character activeFlag;
+
+  @PrePersist
+  protected void onCreate() {
+    createdDate = LocalDateTime.now();
+    updatedDate = createdDate;
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedDate = LocalDateTime.now();
+  }
 }
