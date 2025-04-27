@@ -69,7 +69,6 @@ CREATE TABLE IF NOT EXISTS rm_recipes_category (
   CREATE TABLE IF NOT EXISTS rm_ratings(
     ratings_id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     recipe_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
     rating integer NOT NULL,
     created_date timestamp,
     updated_date timestamp,
@@ -77,6 +76,5 @@ CREATE TABLE IF NOT EXISTS rm_recipes_category (
     updated_by integer NOT NULL,
     CONSTRAINT "rm_ratings_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
     CONSTRAINT "rm_ratings_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
-    CONSTRAINT "rm_ratings_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "public"."rm_recipes"("recipe_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
-    CONSTRAINT "rm_ratings_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION
+    CONSTRAINT "rm_ratings_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "public"."rm_recipes"("recipe_id") ON UPDATE NO ACTION ON DELETE NO ACTION
   );
