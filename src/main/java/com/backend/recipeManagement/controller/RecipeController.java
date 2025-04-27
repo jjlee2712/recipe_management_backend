@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,5 +62,20 @@ public class RecipeController {
     log.info(LogUtil.ENTRY_CONTROLLER, "updateRecipe");
     UserDTO user = authenticationService.getUserDetails();
     recipeService.updateRecipe(recipeId, updateRecipeDTO, user);
+  }
+
+  @Operation(
+      summary = "Delete existing Recipe",
+      description = "Delete API for delete existing recipe")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully deleted recipe",
+        content = @Content(array = @ArraySchema(schema = @Schema(implementation = void.class))))
+  })
+  @DeleteMapping("/{recipeId}")
+  public void deleteRecipe(@PathVariable("recipeId") Long recipeId) {
+    log.info(LogUtil.ENTRY_CONTROLLER, "deleteRecipe");
+    recipeService.deleteRecipe(recipeId);
   }
 }

@@ -7,4 +7,6 @@ public interface IRecipeService {
   void createRecipe(AddRecipeDTO addRecipeDTO, UserDTO user);
 
   void updateRecipe(Long recipeId, AddRecipeDTO updateRecipeDTO, UserDTO user);
+
+  void deleteRecipe(Long recipeId);
 }

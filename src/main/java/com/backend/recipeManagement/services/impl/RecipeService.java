@@ -228,4 +228,13 @@ public class RecipeService implements IRecipeService {
           ExceptionCode.BAD_REQUEST);
     }
   }
+
+  @Override
+  @Transactional
+  public void deleteRecipe(Long recipeId) {
+    log.info(LogUtil.ENTRY_SERVICES, "deleteRecipe");
+    // Delete all ingredients for this recipe
+    // Cascade is set in Database therefore child data will be removed too
+    recipeRepository.deleteById(recipeId);
+  }
 }
