@@ -9,6 +9,13 @@ import com.backend.recipeManagement.dto.authentication.UserDTO;
 import com.backend.recipeManagement.services.IAdminService;
 import com.backend.recipeManagement.services.IAuthenticationService;
 import com.backend.recipeManagement.util.LogUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +33,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/admin")
+@Tag(name = "Admin Controller", description = "API for Admin to manage different master data")
 public class AdminController {
   private final IAdminService adminService;
   private final IAuthenticationService authenticationService;
 
+  @Operation(summary = "Get Category List", description = "Returns all recipe category")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "List of category successfully retrieved",
+        content =
+            @Content(
+                array = @ArraySchema(schema = @Schema(implementation = CategoryListDTO.class))))
+  })
   @GetMapping("/category")
   public List<CategoryListDTO> getCategoryList(
       @RequestParam(required = false) String categoryName,
@@ -47,6 +64,18 @@ public class AdminController {
     return adminService.getCategoryList(requestDTO, paginationRequestDTO, user);
   }
 
+  @Operation(
+      summary = "Get Category List Pages",
+      description = "Return the pagination for the category list")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Pagination successfully retrieved",
+        content =
+            @Content(
+                array =
+                    @ArraySchema(schema = @Schema(implementation = PaginationResponseDTO.class))))
+  })
   @GetMapping("/category/page")
   public PaginationResponseDTO getCategoryListPages(
       @RequestParam(required = false) String categoryName,
@@ -60,6 +89,15 @@ public class AdminController {
     return adminService.getCategoryListPages(requestDTO, paginationRequestDTO, user);
   }
 
+  @Operation(
+      summary = "Create new Recipe Category",
+      description = "POST API for creating new recipe category")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully added new category",
+        content = @Content(array = @ArraySchema(schema = @Schema(implementation = void.class))))
+  })
   @PostMapping("/category")
   public void createCategory(
       @RequestBody AddCategoryDTO addCategoryDTO, Authentication authentication) {
@@ -68,6 +106,15 @@ public class AdminController {
     adminService.createCategory(addCategoryDTO, user);
   }
 
+  @Operation(
+      summary = "Update existing Recipe Category",
+      description = "POST API for updating existing recipe category")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully updated category",
+        content = @Content(array = @ArraySchema(schema = @Schema(implementation = void.class))))
+  })
   @PostMapping("/category/{categoryId}")
   public void updateCategory(
       @PathVariable("categoryId") Long categoryId,
@@ -78,6 +125,15 @@ public class AdminController {
     adminService.updateCategory(categoryId, updateCategoryDTO, user);
   }
 
+  @Operation(
+      summary = "Delete existing Recipe Category",
+      description = "Delete API for delete existing recipe category")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully deleted category",
+        content = @Content(array = @ArraySchema(schema = @Schema(implementation = void.class))))
+  })
   @DeleteMapping("/category/{categoryId}")
   public void deleteCategory(
       @PathVariable("categoryId") Long categoryId, Authentication authentication) {
