@@ -36,6 +36,8 @@ public class Users implements UserDetails {
 
   private LocalDateTime updatedDate;
 
+  private String fullName;
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority(roles));
