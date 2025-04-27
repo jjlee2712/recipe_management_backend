@@ -1,6 +1,7 @@
 package com.backend.recipeManagement.services.impl;
 
 import com.backend.recipeManagement.dto.authentication.RegistrationRequestDTO;
+import com.backend.recipeManagement.dto.authentication.UserDTO;
 import com.backend.recipeManagement.exception.ExceptionCode;
 import com.backend.recipeManagement.exception.RecipeManagementException;
 import com.backend.recipeManagement.model.Users;
@@ -9,6 +10,8 @@ import com.backend.recipeManagement.services.IAuthenticationService;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,5 +51,16 @@ public class AuthenticationService implements IAuthenticationService {
       throw new RecipeManagementException(
           "Invalid Roles", "Roles must be either ADMIN or USER", ExceptionCode.BAD_REQUEST);
     }
+  }
+
+  @Override
+  public UserDTO getUserDetails() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Users users = usersRepository.findByUsername(authentication.getName()).orElse(null);
+    if (users == null) {
+      throw new RecipeManagementException(
+          "User not found", "User not found", ExceptionCode.NOT_FOUND);
+    }
+    return new UserDTO(users.getUserId(), users.getUsername(), users.getFullName());
   }
 }

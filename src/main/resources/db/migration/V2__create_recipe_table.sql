@@ -13,6 +13,7 @@
   updated_date timestamp,
   created_by integer NOT NULL,
   updated_by integer NOT NULL,
+  active_flag char(1) NOT NULL,
   CONSTRAINT "rm_recipes_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT "rm_recipes_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
@@ -25,6 +26,7 @@ CREATE TABLE IF NOT EXISTS rm_category(
   updated_date timestamp,
   created_by integer NOT NULL,
   updated_by integer NOT NULL,
+  active_flag char(1) NOT NULL,
   CONSTRAINT "rm_category_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT "rm_category_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
@@ -38,6 +40,7 @@ CREATE TABLE IF NOT EXISTS rm_recipes_category (
   updated_date timestamp,
   created_by integer NOT NULL,
   updated_by integer NOT NULL,
+  active_flag char(1) NOT NULL,
   CONSTRAINT "rm_recipes_category_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "public"."rm_recipes"("recipe_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT "rm_recipes_category_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "public"."rm_category"("category_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT "rm_category_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -59,6 +62,7 @@ CREATE TABLE IF NOT EXISTS rm_recipes_category (
   created_by integer NOT NULL,
   updated_by integer NOT NULL,
   recipe_id BIGINT NOT NULL,
+  active_flag char(1) NOT NULL,
   CONSTRAINT "rm_ingredients_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT "rm_ingredients_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT "rm_ingredients_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "public"."rm_recipes"("recipe_id") ON UPDATE NO ACTION ON DELETE NO ACTION
@@ -74,6 +78,7 @@ CREATE TABLE IF NOT EXISTS rm_recipes_category (
     updated_date timestamp,
     created_by integer NOT NULL,
     updated_by integer NOT NULL,
+    active_flag char(1) NOT NULL,
     CONSTRAINT "rm_ratings_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
     CONSTRAINT "rm_ratings_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "public"."rm_users"("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
     CONSTRAINT "rm_ratings_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "public"."rm_recipes"("recipe_id") ON UPDATE NO ACTION ON DELETE NO ACTION

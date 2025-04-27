@@ -30,11 +30,11 @@ public class SecurityConfiguration {
                     .requestMatchers("/auth/**")
                     .permitAll()
                     // Only allow admin
-                    .requestMatchers("/admin")
+                    .requestMatchers("/api/v1/admin/**")
                     .hasRole("ADMIN")
-                    // Only allow user
-                    .requestMatchers("/user")
-                    .hasRole("USER")
+                    // // Only allow user
+                    // .requestMatchers("/user")
+                    // .hasRole("USER")
                     .anyRequest()
                     .authenticated());
 
