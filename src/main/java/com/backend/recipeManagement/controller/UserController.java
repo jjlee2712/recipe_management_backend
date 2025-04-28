@@ -6,6 +6,12 @@ import com.backend.recipeManagement.dto.users.UpdateUsersDTO;
 import com.backend.recipeManagement.services.IAuthenticationService;
 import com.backend.recipeManagement.services.IUserService;
 import com.backend.recipeManagement.util.LogUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -23,6 +29,13 @@ public class UserController {
   private final IUserService userService;
   private final IAuthenticationService authenticationService;
 
+  @Operation(summary = "GET User Details", description = "GET API for User Details")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully retrieved User Details",
+        content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDTO.class))))
+  })
   @GetMapping("")
   public UserDTO getUserDetails(Authentication authentication) {
     log.info(LogUtil.ENTRY_CONTROLLER, "getUserDetails");
@@ -30,6 +43,13 @@ public class UserController {
     return user;
   }
 
+  @Operation(summary = "Update User Details", description = "POST API for Update User Details")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully updated User Details",
+        content = @Content(array = @ArraySchema(schema = @Schema(implementation = void.class))))
+  })
   @PostMapping("")
   public void updateUserDetails(
       @RequestBody UpdateUsersDTO updateUsersDTO, Authentication authentication) {
@@ -38,6 +58,13 @@ public class UserController {
     userService.updateUserDetails(updateUsersDTO, user);
   }
 
+  @Operation(summary = "Change Password", description = "POST API for change password")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully changed user password",
+        content = @Content(array = @ArraySchema(schema = @Schema(implementation = void.class))))
+  })
   @PostMapping("/change_password")
   public void changePassword(
       @RequestBody ChangePasswordDTO changePasswordDTO, Authentication authentication) {
