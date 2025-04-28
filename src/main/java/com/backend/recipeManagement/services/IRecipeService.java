@@ -4,6 +4,7 @@ import com.backend.recipeManagement.dto.PaginationRequestDTO;
 import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
 import com.backend.recipeManagement.dto.recipe.AddRecipeDTO;
+import com.backend.recipeManagement.dto.recipe.RecipeDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeListDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeListRequestDTO;
 import java.util.List;
@@ -14,6 +15,8 @@ public interface IRecipeService {
 
   PaginationResponseDTO getRecipeListPages(
       RecipeListRequestDTO requestDTO, PaginationRequestDTO paginationRequestDTO, UserDTO user);
+
+  RecipeDTO getRecipe(Long recipeId, UserDTO user);
 
   void createRecipe(AddRecipeDTO addRecipeDTO, UserDTO user);
 

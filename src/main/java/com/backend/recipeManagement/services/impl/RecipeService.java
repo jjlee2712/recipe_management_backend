@@ -6,6 +6,7 @@ import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
 import com.backend.recipeManagement.dto.recipe.AddRecipeDTO;
 import com.backend.recipeManagement.dto.recipe.AddRecipeIngredientsDTO;
+import com.backend.recipeManagement.dto.recipe.RecipeDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeListDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeListRequestDTO;
 import com.backend.recipeManagement.exception.ExceptionCode;
@@ -56,6 +57,12 @@ public class RecipeService implements IRecipeService {
     log.info(LogUtil.ENTRY_SERVICES, "getRecipeListPages");
     Long total = recipeRepositoryJooq.getRecipeListPages(requestDTO);
     return PaginationUtil.pagination(paginationRequestDTO.size(), total);
+  }
+
+  @Override
+  public RecipeDTO getRecipe(Long recipeId, UserDTO user) {
+    log.info(LogUtil.ENTRY_SERVICES, "getRecipe");
+    return recipeRepositoryJooq.getRecipe(recipeId);
   }
 
   @Override

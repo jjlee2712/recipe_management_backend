@@ -4,6 +4,7 @@ import com.backend.recipeManagement.dto.PaginationRequestDTO;
 import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
 import com.backend.recipeManagement.dto.recipe.AddRecipeDTO;
+import com.backend.recipeManagement.dto.recipe.RecipeDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeListDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeListRequestDTO;
 import com.backend.recipeManagement.services.IAuthenticationService;
@@ -120,6 +121,22 @@ public class RecipeController {
             category);
     PaginationRequestDTO paginationRequestDTO = new PaginationRequestDTO(null, null, null, size);
     return recipeService.getRecipeListPages(requestDTO, paginationRequestDTO, user);
+  }
+
+  @Operation(summary = "GET Recipe Details", description = "GET API for Recipe Details")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully retrieve Recipe Details",
+        content =
+            @Content(array = @ArraySchema(schema = @Schema(implementation = RecipeDTO.class))))
+  })
+  @GetMapping("/{recipeId}")
+  public RecipeDTO getRecipe(
+      @PathVariable("recipeId") Long recipeId, Authentication authentication) {
+    log.info(LogUtil.ENTRY_CONTROLLER, "getRecipe");
+    UserDTO user = authenticationService.getUserDetails();
+    return recipeService.getRecipe(recipeId, user);
   }
 
   @Operation(summary = "Add new Recipe", description = "POST API for adding new recipe")
