@@ -15,23 +15,30 @@ import com.backend.recipeManagement.exception.RecipeManagementException;
 import com.backend.recipeManagement.mapper.recipe.RecipeMapper;
 import com.backend.recipeManagement.model.Category;
 import com.backend.recipeManagement.model.Ingredients;
+import com.backend.recipeManagement.model.RecipeAttachments;
 import com.backend.recipeManagement.model.Recipes;
 import com.backend.recipeManagement.model.RecipesCategory;
 import com.backend.recipeManagement.repository.jooq.RecipeRepositoryJooq;
 import com.backend.recipeManagement.repository.jpa.CategoryRepository;
 import com.backend.recipeManagement.repository.jpa.IngredientsRepository;
+import com.backend.recipeManagement.repository.jpa.RecipeAttachmentsRepository;
 import com.backend.recipeManagement.repository.jpa.RecipeRepository;
 import com.backend.recipeManagement.repository.jpa.RecipesCategoryRepository;
 import com.backend.recipeManagement.services.IRecipeService;
 import com.backend.recipeManagement.util.LogUtil;
 import com.backend.recipeManagement.util.PaginationUtil;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -42,6 +49,7 @@ public class RecipeService implements IRecipeService {
   private final RecipesCategoryRepository recipesCategoryRepository;
   private final CategoryRepository categoryRepository;
   private final IngredientsRepository ingredientsRepository;
+  private final RecipeAttachmentsRepository recipeAttachmentsRepository;
 
   @Override
   public List<RecipeListDTO> getRecipeList(
@@ -273,5 +281,50 @@ public class RecipeService implements IRecipeService {
   public List<DropdownDTO> getCategoryList() {
     log.info(LogUtil.ENTRY_SERVICES, "getCategoryList");
     return recipeRepositoryJooq.getCategoryList();
+  }
+
+  @Override
+  @Transactional
+  public void uploadAttachments(Long recipeId, MultipartFile files, UserDTO user) {
+    log.info(LogUtil.ENTRY_SERVICES, "uploadAttachments");
+    try {
+      RecipeAttachments recipeAttachments = new RecipeAttachments();
+      recipeAttachments.setContentType(files.getContentType());
+      recipeAttachments.setFileName(files.getName());
+      recipeAttachments.setData(files.getBytes());
+      recipeAttachments.setRecipes(recipeRepository.getReferenceById(recipeId));
+      recipeAttachments.setCreatedBy(user.userId());
+      recipeAttachments.setUpdatedBy(user.userId());
+      recipeAttachmentsRepository.save(recipeAttachments);
+    } catch (Exception e) {
+      throw new RecipeManagementException(
+          "Error uploading attachments",
+          "Please try again later",
+          ExceptionCode.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Override
+  public byte[] getAttachments(Long recipeId, Long attachmentId) {
+    log.info(LogUtil.ENTRY_SERVICES, "getAttachments");
+    RecipeAttachments recipeAttachments =
+        recipeAttachmentsRepository.getReferenceById(attachmentId);
+    try {
+      // Fetch byte array from recipeAttachments
+      byte[] image = recipeAttachments.getData();
+      // Wrap byte array into input stream
+      ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(image);
+      // Decodes input stream into Images
+      // BufferedImage represent and image that holds matrix of pixels
+      BufferedImage bufferedImage = ImageIO.read(byteArrayInputStream);
+      // Create output stream
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      // Re-encode image in JPG format
+      ImageIO.write(bufferedImage, "JPG", baos);
+      return baos.toByteArray();
+    } catch (Exception e) {
+      throw new RecipeManagementException(
+          "Error processing image", e.toString(), ExceptionCode.BAD_REQUEST);
+    }
   }
 }

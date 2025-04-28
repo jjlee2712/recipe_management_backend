@@ -29,6 +29,8 @@ public class SecurityConfiguration {
                 authorize
                     .requestMatchers("/auth/**")
                     .permitAll()
+                    .requestMatchers("/api/v1/recipe/{recipeId}/attachments/{attachmentId}")
+                    .permitAll()
                     // Allow Swagger to bypass authentication
                     .requestMatchers(
                         "/swagger-ui.html",

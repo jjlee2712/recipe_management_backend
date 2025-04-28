@@ -9,6 +9,7 @@ import com.backend.recipeManagement.dto.recipe.RecipeDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeListDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeListRequestDTO;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IRecipeService {
   List<RecipeListDTO> getRecipeList(
@@ -26,4 +27,8 @@ public interface IRecipeService {
   void deleteRecipe(Long recipeId);
 
   List<DropdownDTO> getCategoryList();
+
+  void uploadAttachments(Long recipeId, MultipartFile files, UserDTO user);
+
+  byte[] getAttachments(Long recipeId, Long attachmentId);
 }

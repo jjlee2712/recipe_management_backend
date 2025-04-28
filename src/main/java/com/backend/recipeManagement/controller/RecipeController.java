@@ -21,6 +21,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -200,5 +205,41 @@ public class RecipeController {
   public List<DropdownDTO> getCategoryList() {
     log.info(LogUtil.ENTRY_CONTROLLER, "getCategoryList");
     return recipeService.getCategoryList();
+  }
+
+  @Operation(summary = "Upload Attachments", description = "POST API for Upload Attachments")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully uploaded attachments",
+        content = @Content(array = @ArraySchema(schema = @Schema(implementation = void.class))))
+  })
+  @PostMapping("/{recipeId}/upload_attachments")
+  public void uploadAttachments(
+      @PathVariable("recipeId") Long recipeId,
+      @RequestParam("file") MultipartFile files,
+      Authentication authentication) {
+    log.info(LogUtil.ENTRY_CONTROLLER, "uploadAttachments");
+    UserDTO user = authenticationService.getUserDetails();
+    recipeService.uploadAttachments(recipeId, files, user);
+  }
+
+  @Operation(summary = "View Attachments", description = "GET API for view attachments")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully retrieved attachments",
+        content = @Content(array = @ArraySchema(schema = @Schema(implementation = byte[].class))))
+  })
+  @GetMapping("/{recipeId}/attachments/{attachmentId}")
+  public ResponseEntity<byte[]> getAttachments(
+      @PathVariable("recipeId") Long recipeId,
+      @PathVariable("attachmentId") Long attachmentId,
+      Authentication authentication) {
+    log.info(LogUtil.ENTRY_CONTROLLER, "getAttachments");
+    byte[] imageBytes = recipeService.getAttachments(recipeId, attachmentId);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.IMAGE_JPEG);
+    return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
   }
 }

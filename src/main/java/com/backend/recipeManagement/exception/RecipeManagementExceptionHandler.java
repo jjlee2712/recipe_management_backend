@@ -10,6 +10,8 @@ public class RecipeManagementExceptionHandler {
       case BAD_REQUEST -> ResponseEntity.badRequest().body(e.response(HttpStatus.BAD_REQUEST));
       case NOT_FOUND -> ResponseEntity.status(204).body(e.response(HttpStatus.NOT_FOUND));
       case CONFLICT -> ResponseEntity.status(409).body(e.response(HttpStatus.CONFLICT));
+      case INTERNAL_SERVER_ERROR ->
+          ResponseEntity.status(500).body(e.response(HttpStatus.INTERNAL_SERVER_ERROR));
     };
   }
 }
