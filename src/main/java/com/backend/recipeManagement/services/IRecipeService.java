@@ -1,5 +1,6 @@
 package com.backend.recipeManagement.services;
 
+import com.backend.recipeManagement.dto.DropdownDTO;
 import com.backend.recipeManagement.dto.PaginationRequestDTO;
 import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
@@ -23,4 +24,6 @@ public interface IRecipeService {
   void updateRecipe(Long recipeId, AddRecipeDTO updateRecipeDTO, UserDTO user);
 
   void deleteRecipe(Long recipeId);
+
+  List<DropdownDTO> getCategoryList();
 }

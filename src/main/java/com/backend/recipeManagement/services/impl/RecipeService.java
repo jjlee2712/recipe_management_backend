@@ -1,6 +1,7 @@
 package com.backend.recipeManagement.services.impl;
 
 import com.backend.recipeManagement.constant.CommonConstant;
+import com.backend.recipeManagement.dto.DropdownDTO;
 import com.backend.recipeManagement.dto.PaginationRequestDTO;
 import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
@@ -266,5 +267,11 @@ public class RecipeService implements IRecipeService {
     // Delete all ingredients for this recipe
     // Cascade is set in Database therefore child data will be removed too
     recipeRepository.deleteById(recipeId);
+  }
+
+  @Override
+  public List<DropdownDTO> getCategoryList() {
+    log.info(LogUtil.ENTRY_SERVICES, "getCategoryList");
+    return recipeRepositoryJooq.getCategoryList();
   }
 }

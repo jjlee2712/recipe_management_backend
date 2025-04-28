@@ -1,5 +1,6 @@
 package com.backend.recipeManagement.controller;
 
+import com.backend.recipeManagement.dto.DropdownDTO;
 import com.backend.recipeManagement.dto.PaginationRequestDTO;
 import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
@@ -185,5 +186,19 @@ public class RecipeController {
   public void deleteRecipe(@PathVariable("recipeId") Long recipeId) {
     log.info(LogUtil.ENTRY_CONTROLLER, "deleteRecipe");
     recipeService.deleteRecipe(recipeId);
+  }
+
+  @Operation(summary = "Category Dropdown", description = "GET API for Category Dropdown")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully retrieved category dropdown list",
+        content =
+            @Content(array = @ArraySchema(schema = @Schema(implementation = DropdownDTO.class))))
+  })
+  @GetMapping("/category")
+  public List<DropdownDTO> getCategoryList() {
+    log.info(LogUtil.ENTRY_CONTROLLER, "getCategoryList");
+    return recipeService.getCategoryList();
   }
 }

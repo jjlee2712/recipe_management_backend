@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -38,8 +40,23 @@ public class Users implements UserDetails {
 
   private String fullName;
 
+  private Long createdBy;
+
+  private Long updatedBy;
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority(roles));
+  }
+
+  @PrePersist
+  protected void onCreate() {
+    createdDate = LocalDateTime.now();
+    updatedDate = createdDate;
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedDate = LocalDateTime.now();
   }
 }

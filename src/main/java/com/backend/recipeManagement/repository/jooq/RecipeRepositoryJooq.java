@@ -3,6 +3,7 @@ package com.backend.recipeManagement.repository.jooq;
 import static org.jooq.impl.DSL.*;
 
 import com.backend.recipeManagement.constant.CommonConstant;
+import com.backend.recipeManagement.dto.DropdownDTO;
 import com.backend.recipeManagement.dto.PaginationRequestDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeDTO;
 import com.backend.recipeManagement.dto.recipe.RecipeListDTO;
@@ -19,10 +20,12 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record10;
+import org.jooq.Record2;
 import org.jooq.Record3;
 import org.jooq.Record4;
 import org.jooq.Record8;
 import org.jooq.Result;
+import org.jooq.SelectConditionStep;
 import org.jooq.SelectHavingStep;
 import org.jooq.SelectJoinStep;
 import org.jooq.SelectLimitPercentAfterOffsetStep;
@@ -234,5 +237,21 @@ public class RecipeRepositoryJooq {
 
     log.info(LogUtil.QUERY, query);
     return query.fetchOneInto(RecipeDTO.class);
+  }
+
+  public List<DropdownDTO> getCategoryList() {
+    log.info(LogUtil.ENTRY_REPOSITORY, "getCategoryList");
+    Condition condition = noCondition();
+    condition = condition.and(field("CAT.active_flag").eq(CommonConstant.ACTIVE.toString()));
+
+    Field<String> value = field("CAT.category_id", String.class).as("value");
+    Field<String> description = field("CAT.category_name", String.class).as("description");
+
+    SelectConditionStep<Record2<String, String>> query =
+        dsl.select(value, description).from(table("rm_category CAT")).where(condition);
+
+    log.info(LogUtil.QUERY, query);
+
+    return query.fetchInto(DropdownDTO.class);
   }
 }

@@ -32,6 +32,9 @@ public class AuthenticationService implements IAuthenticationService {
     users.setCreatedDate(LocalDateTime.now());
     users.setUpdatedDate(LocalDateTime.now());
     usersRepository.save(users);
+    users.setCreatedBy(users.getUserId());
+    users.setUpdatedBy(users.getUserId());
+    usersRepository.save(users);
   }
 
   private void validateUser(RegistrationRequestDTO registrationRequestDTO) {
@@ -61,6 +64,7 @@ public class AuthenticationService implements IAuthenticationService {
       throw new RecipeManagementException(
           "User not found", "User not found", ExceptionCode.NOT_FOUND);
     }
-    return new UserDTO(users.getUserId(), users.getUsername(), users.getFullName());
+    return new UserDTO(
+        users.getUserId(), users.getUsername(), users.getFullName(), users.getRoles());
   }
 }
