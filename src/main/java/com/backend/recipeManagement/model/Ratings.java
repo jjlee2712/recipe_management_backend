@@ -25,12 +25,16 @@ public class Ratings {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long ratingsId;
 
+  private Long rating;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "recipe_id", insertable = true, updatable = true)
   private Recipes recipes;
 
   @Column(name = "recipe_id", insertable = false, updatable = false)
   private Long recipeId;
+
+  private String remarks;
 
   private LocalDateTime createdDate;
 
@@ -39,6 +43,8 @@ public class Ratings {
   private Long createdBy;
 
   private Long updatedBy;
+
+  private Character activeFlag;
 
   @PrePersist
   protected void onCreate() {

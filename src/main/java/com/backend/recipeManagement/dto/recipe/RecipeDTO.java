@@ -1,6 +1,5 @@
 package com.backend.recipeManagement.dto.recipe;
 
-
 public record RecipeDTO(
     String title,
     String description,
@@ -10,4 +9,5 @@ public record RecipeDTO(
     Long servings,
     String difficulty,
     String category,
-    RecipeIngredientListDTO[] ingredientList) {}
+    RecipeIngredientListDTO[] ingredientList,
+    RatingsListDTO[] ratings) {}

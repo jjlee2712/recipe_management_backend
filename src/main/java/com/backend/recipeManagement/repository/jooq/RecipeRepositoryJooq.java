@@ -18,9 +18,10 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record1;
+import org.jooq.Record10;
+import org.jooq.Record3;
 import org.jooq.Record4;
 import org.jooq.Record8;
-import org.jooq.Record9;
 import org.jooq.Result;
 import org.jooq.SelectHavingStep;
 import org.jooq.SelectJoinStep;
@@ -189,9 +190,12 @@ public class RecipeRepositoryJooq {
     Field<String> ingredientName = field("ING.ingredient_name", String.class).as("ingredientName");
     Field<BigDecimal> quantity = round(field("ING.quantity", BigDecimal.class), 2).as("quantity");
     Field<String> unit = field("ING.unit", String.class).as("unit");
+    Field<Long> ratingsId = field("RT.ratings_id", Long.class).as("ratingsId");
+    Field<Long> rating = field("RT.rating", Long.class).as("rating");
+    Field<String> remarks = field("RT.remarks", String.class).as("remarks");
 
     SelectHavingStep<
-            Record9<
+            Record10<
                 String,
                 String,
                 String,
@@ -200,7 +204,8 @@ public class RecipeRepositoryJooq {
                 Long,
                 String,
                 String,
-                Result<Record4<Long, String, BigDecimal, String>>>>
+                Result<Record4<Long, String, BigDecimal, String>>,
+                Result<Record3<Long, Long, String>>>>
         query =
             dsl.select(
                     title,
@@ -214,7 +219,11 @@ public class RecipeRepositoryJooq {
                     multiset(
                         select(ingredientId, ingredientName, quantity, unit)
                             .from(table("rm_ingredients ING"))
-                            .where(field("ING.recipe_Id").eq(field("REC.recipe_id")))))
+                            .where(field("ING.recipe_Id").eq(field("REC.recipe_id")))),
+                    multiset(
+                        select(ratingsId, rating, remarks)
+                            .from(table("rm_ratings RT"))
+                            .where(field("RT.recipe_Id").eq(field("REC.recipe_id")))))
                 .from(table("rm_recipes REC"))
                 .leftJoin(table("rm_recipes_category RC"))
                 .on(field("REC.recipe_id").eq(field("RC.recipe_id")))
