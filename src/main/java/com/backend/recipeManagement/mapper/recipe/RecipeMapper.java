@@ -1,7 +1,9 @@
 package com.backend.recipeManagement.mapper.recipe;
 
 import com.backend.recipeManagement.mapper.ColumnMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Represents a mapper Recipe List for mapping between requestParam and query")
 public class RecipeMapper extends ColumnMapper {
   public RecipeMapper() {
     COLUMN_MAP.put("title", "title");
