@@ -1,3 +1,10 @@
+# Build the Spring Boot JAR
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY . .
+RUN gradle bootJar --no-daemon
+
+
 # Use a base image with JDK 17
 FROM eclipse-temurin:17-jdk-alpine
 
