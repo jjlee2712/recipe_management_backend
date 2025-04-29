@@ -27,6 +27,8 @@ public class SecurityConfiguration {
         .authorizeHttpRequests(
             authorize ->
                 authorize
+                    .requestMatchers("/actuator/**")
+                    .permitAll()
                     .requestMatchers("/auth/**")
                     .permitAll()
                     .requestMatchers("/api/v1/recipe/{recipeId}/attachments/{attachmentId}")
