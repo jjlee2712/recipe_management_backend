@@ -1,13 +1,7 @@
-# Stage 1: Build the Spring Boot JAR
-FROM eclipse-temurin:17-jdk-alpine
+# Build the Spring Boot JAR
+FROM gradle:8.4-jdk17-alpine AS builder
 WORKDIR /app
-
-# Use Gradle wrapper and cache dependencies
-COPY gradle gradle
-COPY gradlew .
-COPY build.gradle .
-COPY settings.gradle .
-COPY src src
+COPY . .
 RUN ./gradlew bootJar --no-daemon
 
 
