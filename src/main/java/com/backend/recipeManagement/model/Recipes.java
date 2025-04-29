@@ -48,6 +48,8 @@ public class Recipes {
 
   private Character activeFlag;
 
+  private String inactiveRecipeReason;
+
   @PrePersist
   protected void onCreate() {
     createdDate = LocalDateTime.now();

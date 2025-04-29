@@ -5,6 +5,7 @@ import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.admin.AddCategoryDTO;
 import com.backend.recipeManagement.dto.admin.CategoryListDTO;
 import com.backend.recipeManagement.dto.admin.CategoryListRequestDTO;
+import com.backend.recipeManagement.dto.admin.InactiveRecipeDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
 import java.util.List;
 
@@ -21,4 +22,8 @@ public interface IAdminService {
   void updateCategory(Long categoryId, AddCategoryDTO updateCategoryDTO, UserDTO user);
 
   void deleteCategory(Long categoryId, UserDTO user);
+
+  void inactiveRecipe(Long recipeId, InactiveRecipeDTO inactiveRecipeDTO, UserDTO user);
+
+  void activeRecipe(Long recipeId, UserDTO user);
 }

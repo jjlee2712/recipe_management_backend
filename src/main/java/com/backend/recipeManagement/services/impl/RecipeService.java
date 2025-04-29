@@ -285,22 +285,24 @@ public class RecipeService implements IRecipeService {
 
   @Override
   @Transactional
-  public void uploadAttachments(Long recipeId, MultipartFile files, UserDTO user) {
+  public void uploadAttachments(Long recipeId, List<MultipartFile> files, UserDTO user) {
     log.info(LogUtil.ENTRY_SERVICES, "uploadAttachments");
-    try {
-      RecipeAttachments recipeAttachments = new RecipeAttachments();
-      recipeAttachments.setContentType(files.getContentType());
-      recipeAttachments.setFileName(files.getName());
-      recipeAttachments.setData(files.getBytes());
-      recipeAttachments.setRecipes(recipeRepository.getReferenceById(recipeId));
-      recipeAttachments.setCreatedBy(user.userId());
-      recipeAttachments.setUpdatedBy(user.userId());
-      recipeAttachmentsRepository.save(recipeAttachments);
-    } catch (Exception e) {
-      throw new RecipeManagementException(
-          "Error uploading attachments",
-          "Please try again later",
-          ExceptionCode.INTERNAL_SERVER_ERROR);
+    for (MultipartFile file : files) {
+      try {
+        RecipeAttachments recipeAttachments = new RecipeAttachments();
+        recipeAttachments.setContentType(file.getContentType());
+        recipeAttachments.setFileName(file.getName());
+        recipeAttachments.setData(file.getBytes());
+        recipeAttachments.setRecipes(recipeRepository.getReferenceById(recipeId));
+        recipeAttachments.setCreatedBy(user.userId());
+        recipeAttachments.setUpdatedBy(user.userId());
+        recipeAttachmentsRepository.save(recipeAttachments);
+      } catch (Exception e) {
+        throw new RecipeManagementException(
+            "Error uploading attachments",
+            "Please try again later",
+            ExceptionCode.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 

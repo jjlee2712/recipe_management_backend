@@ -217,7 +217,7 @@ public class RecipeController {
   @PostMapping("/{recipeId}/upload_attachments")
   public void uploadAttachments(
       @PathVariable("recipeId") Long recipeId,
-      @RequestParam("file") MultipartFile files,
+      @RequestParam("file") List<MultipartFile> files,
       Authentication authentication) {
     log.info(LogUtil.ENTRY_CONTROLLER, "uploadAttachments");
     UserDTO user = authenticationService.getUserDetails();

@@ -6,13 +6,16 @@ import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.admin.AddCategoryDTO;
 import com.backend.recipeManagement.dto.admin.CategoryListDTO;
 import com.backend.recipeManagement.dto.admin.CategoryListRequestDTO;
+import com.backend.recipeManagement.dto.admin.InactiveRecipeDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
 import com.backend.recipeManagement.exception.ExceptionCode;
 import com.backend.recipeManagement.exception.RecipeManagementException;
 import com.backend.recipeManagement.mapper.category.CategoryMapper;
 import com.backend.recipeManagement.model.Category;
+import com.backend.recipeManagement.model.Recipes;
 import com.backend.recipeManagement.repository.jooq.CategoryRepositoryJooq;
 import com.backend.recipeManagement.repository.jpa.CategoryRepository;
+import com.backend.recipeManagement.repository.jpa.RecipeRepository;
 import com.backend.recipeManagement.services.IAdminService;
 import com.backend.recipeManagement.util.LogUtil;
 import com.backend.recipeManagement.util.PaginationUtil;
@@ -28,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminService implements IAdminService {
   private final CategoryRepository categoryRepository;
   private final CategoryRepositoryJooq categoryRepositoryJooq;
+  private final RecipeRepository recipeRepository;
 
   @Override
   public List<CategoryListDTO> getCategoryList(
@@ -118,5 +122,37 @@ public class AdminService implements IAdminService {
     log.info(LogUtil.ENTRY_SERVICES, "deleteCategory");
     Category category = categoryRepository.getReferenceById(categoryId);
     categoryRepository.delete(category);
+  }
+
+  @Override
+  @Transactional
+  public void inactiveRecipe(Long recipeId, InactiveRecipeDTO inactiveRecipeDTO, UserDTO user) {
+    log.info(LogUtil.ENTRY_REPOSITORY, "inactiveRecipe");
+    if (inactiveRecipeDTO.inactiveReason() == null
+        || inactiveRecipeDTO.inactiveReason().isBlank()) {
+      throw new RecipeManagementException(
+          "Invalid Inactive Reason", "Inactive Reason is required", ExceptionCode.BAD_REQUEST);
+    }
+    try {
+      Thread.sleep(30000);
+    } catch (InterruptedException e) {
+      log.error("Error sleeping", e);
+    }
+    Recipes recipes = recipeRepository.getReferenceById(recipeId);
+    recipes.setActiveFlag(CommonConstant.INACTIVE);
+    recipes.setInactiveRecipeReason(inactiveRecipeDTO.inactiveReason());
+    recipes.setUpdatedBy(user.userId());
+    recipeRepository.save(recipes);
+  }
+
+  @Override
+  @Transactional
+  public void activeRecipe(Long recipeId, UserDTO user) {
+    log.info(LogUtil.ENTRY_REPOSITORY, "activeRecipe");
+    Recipes recipes = recipeRepository.getReferenceById(recipeId);
+    recipes.setActiveFlag(CommonConstant.ACTIVE);
+    recipes.setInactiveRecipeReason(null);
+    recipes.setUpdatedBy(user.userId());
+    recipeRepository.save(recipes);
   }
 }

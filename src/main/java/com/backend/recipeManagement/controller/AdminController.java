@@ -5,10 +5,17 @@ import com.backend.recipeManagement.dto.PaginationResponseDTO;
 import com.backend.recipeManagement.dto.admin.AddCategoryDTO;
 import com.backend.recipeManagement.dto.admin.CategoryListDTO;
 import com.backend.recipeManagement.dto.admin.CategoryListRequestDTO;
+import com.backend.recipeManagement.dto.admin.InactiveRecipeDTO;
 import com.backend.recipeManagement.dto.authentication.UserDTO;
+import com.backend.recipeManagement.exception.ExceptionCode;
+import com.backend.recipeManagement.exception.RecipeManagementException;
 import com.backend.recipeManagement.services.IAdminService;
 import com.backend.recipeManagement.services.IAuthenticationService;
 import com.backend.recipeManagement.util.LogUtil;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.Refill;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,8 +23,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.Duration;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,12 +38,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@AllArgsConstructor
 @RequestMapping("/api/v1/admin")
 @Tag(name = "Admin Controller", description = "API for Admin to manage different master data")
 public class AdminController {
   private final IAdminService adminService;
   private final IAuthenticationService authenticationService;
+  private final Bucket bucket;
+
+  public AdminController(IAdminService adminService, IAuthenticationService authenticationService) {
+    this.adminService = adminService;
+    this.authenticationService = authenticationService;
+    Bandwidth limit = Bandwidth.classic(2, Refill.of(2, Duration.ofMinutes(1)));
+    this.bucket = Bucket4j.builder().addLimit(limit).build();
+  }
 
   @Operation(summary = "Get Category List", description = "Returns all recipe category")
   @ApiResponses({
@@ -56,12 +70,17 @@ public class AdminController {
       @RequestParam(required = false) Long page,
       @RequestParam(required = false) Long size,
       Authentication authentication) {
-    log.info(LogUtil.ENTRY_CONTROLLER, "getCategoryList");
-    UserDTO user = authenticationService.getUserDetails();
-    CategoryListRequestDTO requestDTO = new CategoryListRequestDTO(categoryName, status);
-    PaginationRequestDTO paginationRequestDTO =
-        new PaginationRequestDTO(sort, sortDirection, page, size);
-    return adminService.getCategoryList(requestDTO, paginationRequestDTO, user);
+    if (bucket.tryConsume(1)) {
+      log.info(LogUtil.ENTRY_CONTROLLER, "getCategoryList");
+      UserDTO user = authenticationService.getUserDetails();
+      CategoryListRequestDTO requestDTO = new CategoryListRequestDTO(categoryName, status);
+      PaginationRequestDTO paginationRequestDTO =
+          new PaginationRequestDTO(sort, sortDirection, page, size);
+      return adminService.getCategoryList(requestDTO, paginationRequestDTO, user);
+    } else {
+      throw new RecipeManagementException(
+          "429", "Too many requests", ExceptionCode.TOO_MANY_REQUESTS);
+    }
   }
 
   @Operation(
@@ -140,5 +159,22 @@ public class AdminController {
     log.info(LogUtil.ENTRY_CONTROLLER, "deleteCategory");
     UserDTO user = authenticationService.getUserDetails();
     adminService.deleteCategory(categoryId, user);
+  }
+
+  @PostMapping("/recipe/{recipeId}/inactive")
+  public void inactiveRecipe(
+      @PathVariable("recipeId") Long recipeId,
+      @RequestBody InactiveRecipeDTO inactiveRecipeDTO,
+      Authentication authentication) {
+    log.info(LogUtil.ENTRY_CONTROLLER, "inactiveRecipe");
+    UserDTO user = authenticationService.getUserDetails();
+    adminService.inactiveRecipe(recipeId, inactiveRecipeDTO, user);
+  }
+
+  @PostMapping("/recipe/{recipeId}/active")
+  public void activeRecipe(@PathVariable("recipeId") Long recipeId, Authentication authentication) {
+    log.info(LogUtil.ENTRY_CONTROLLER, "activeRecipe");
+    UserDTO user = authenticationService.getUserDetails();
+    adminService.activeRecipe(recipeId, user);
   }
 }

@@ -28,7 +28,7 @@ public interface IRecipeService {
 
   List<DropdownDTO> getCategoryList();
 
-  void uploadAttachments(Long recipeId, MultipartFile files, UserDTO user);
+  void uploadAttachments(Long recipeId, List<MultipartFile> files, UserDTO user);
 
   byte[] getAttachments(Long recipeId, Long attachmentId);
 }
