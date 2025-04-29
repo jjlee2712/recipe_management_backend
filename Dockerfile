@@ -2,7 +2,7 @@
 FROM gradle:8.4-jdk17-alpine AS builder
 WORKDIR /app
 COPY . .
-RUN ./gradlew build --no-daemon
+RUN ./gradlew bootJar --no-daemon
 
 
 # Use a base image with JDK 17
