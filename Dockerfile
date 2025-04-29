@@ -2,7 +2,7 @@
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 COPY . .
-RUN gradle bootJar --no-daemon
+RUN gradlew build --no-daemon
 
 
 # Use a base image with JDK 17
