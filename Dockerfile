@@ -1,21 +1,18 @@
-# Build the Spring Boot JAR
+# Stage 1: Build the JAR
 FROM gradle:8.4-jdk17-alpine AS builder
 WORKDIR /app
-COPY . .
+
+# Copy only necessary files to leverage Docker cache
+COPY build.gradle settings.gradle gradlew ./
+COPY gradle gradle
+COPY src src
+
 RUN ./gradlew bootJar --no-daemon
 
-
-# Use a base image with JDK 17
+# Stage 2: Run the JAR
 FROM eclipse-temurin:17-jdk-alpine
-
-# Set the working directory
 WORKDIR /app
+COPY --from=builder /app/build/libs/*.jar app.jar
 
-# Copy the JAR file (built by Gradle)
-COPY build/libs/recipeManagement-0.0.1-SNAPSHOT.jar recipeManagement-0.0.1-SNAPSHOT.jar
-
-# Expose the default Spring Boot port
 EXPOSE 8080
-
-# Run the JAR
-ENTRYPOINT ["java", "-jar", "recipeManagement-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
