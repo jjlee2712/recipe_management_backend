@@ -7,14 +7,17 @@ import com.backend.recipeManagement.exception.RecipeManagementException;
 import com.backend.recipeManagement.model.Users;
 import com.backend.recipeManagement.repository.jpa.UsersRepository;
 import com.backend.recipeManagement.services.IAuthenticationService;
+import com.backend.recipeManagement.util.LogUtil;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AuthenticationService implements IAuthenticationService {
@@ -24,6 +27,7 @@ public class AuthenticationService implements IAuthenticationService {
   @Override
   @Transactional
   public void registration(RegistrationRequestDTO registrationRequestDTO) {
+    log.info(LogUtil.ENTRY_SERVICES, "registration");
     Users users = new Users();
     validateUser(registrationRequestDTO);
     users.setUsername(registrationRequestDTO.username());
@@ -31,6 +35,7 @@ public class AuthenticationService implements IAuthenticationService {
     users.setRoles(registrationRequestDTO.roles());
     users.setCreatedDate(LocalDateTime.now());
     users.setUpdatedDate(LocalDateTime.now());
+    users.setFullName(registrationRequestDTO.fullname());
     usersRepository.save(users);
     users.setCreatedBy(users.getUserId());
     users.setUpdatedBy(users.getUserId());
@@ -38,6 +43,7 @@ public class AuthenticationService implements IAuthenticationService {
   }
 
   private void validateUser(RegistrationRequestDTO registrationRequestDTO) {
+    log.info(LogUtil.ENTRY_SERVICES, "validateUser");
     Users existingUser =
         usersRepository.findByUsername(registrationRequestDTO.username()).orElse(null);
     if (existingUser != null) {
@@ -58,6 +64,7 @@ public class AuthenticationService implements IAuthenticationService {
 
   @Override
   public UserDTO getUserDetails() {
+    log.info(LogUtil.ENTRY_SERVICES, "getUserDetails");
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     Users users = usersRepository.findByUsername(authentication.getName()).orElse(null);
     if (users == null) {
