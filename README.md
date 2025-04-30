@@ -14,7 +14,7 @@
 * Java 17+
 * Spring Data JPA
 * jOOQ Object Oriented Querying
-* Spring Security - JWT Token Authentication
+* Spring Security
 * PostgreSQL - Neon tech
 * Gradle for dependency management
 
