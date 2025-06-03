@@ -36,5 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 .gitignore
-# **/application.properties
+**/application-dev.properties
 # gradle.properties
